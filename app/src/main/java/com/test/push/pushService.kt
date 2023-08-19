@@ -1,5 +1,6 @@
 package com.test.push
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -20,16 +21,20 @@ class PushService : FirebaseMessagingService() {
         Log.d(TAG, "refreshed token: $token")
 
         // 토큰 값 따로 저장
+        /*
         val pref = this.getSharedPreferences("token", Context.MODE_PRIVATE)
         val editor = pref.edit()
         editor.putString("token",token).apply()
         editor.commit()
-
+*/
+        sendRegistrationToServer(token)
         Log.i("로그", "토큰 저장 성공적")
     }
 
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: " + remoteMessage.from)
+
+        Log.d(TAG, "From: ${remoteMessage.from}")
 
         if(remoteMessage.data.isNotEmpty()){
             Log.i("바디", remoteMessage.data["body"].toString())
@@ -40,9 +45,16 @@ class PushService : FirebaseMessagingService() {
             Log.i("수신에러 : ", "data가 비어있습니다. 메시지를 수신하지 못했습니다.")
             Log.i("data값 :",remoteMessage.data.toString())
         }
+
+    }
+
+    private fun sendRegistrationToServer(token: String?) {
+        // TODO: Implement this method to send token to your app server.
+        Log.d(TAG, "sendRegistrationTokenToServer($token)")
     }
 
     // 알림 생성 (아이콘, 알림 소리 등)
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun sendNotification(remoteMessage: RemoteMessage){
         // RemoteCode, ID를 고유값으로 지정하여 알림이 개별 표시 되도록 함
         val uniId: Int = (System.currentTimeMillis() / 7).toInt()
